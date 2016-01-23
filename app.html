@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html ng-app="synapse">
+  <head>
+    <meta charset="utf-8">
+    <title>Synapse</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet"/>
+    <link href="bootstrap-theme.css" rel="stylesheet"/>
+
+    <script>
+      angular.module("synapse",["customFilters"]);
+    </script>
+    <script src="controllers/dataControllers.js"></script>
+    <script src="controllers/pageControllers.js"></script>
+    <script src="filters/customFilters.js"></script>
+  </head>
+  <body ng-controller="dataCtrl">
+
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Synapse</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+    <div class="container theme-showcase" role="main">
+
+
+      <div class="panel panel-default row" ng-controller="pageCtrl">
+        <div class="col-xs-3">
+          <div class="">
+            <h4>
+              <strong>Search Company by Keywrods:</strong>
+            </h4>
+          </div>
+
+          <input type="text" data-ng-model="filteringText" />
+
+
+
+        </div>
+        <div class="col-xs-5" >
+
+          <div ng-repeat="item in data.records|orderBy: 'Name' |filter:filteringText|range:selectedPage:pageSize" ng-click="selectCompany(item.Name)" class="panel well" >
+            <h4>
+              <strong>{{item.Name}}</strong>
+              <span class="pull-right label label-primary" ng-show="{{item.AnnualRevenue}}">
+                {{item.AnnualRevenue|currency}}
+              </span>
+            </h4>
+
+              <a href="{{item.Website}}">{{item.Website}}</a>
+              <br/>
+              Account No.: {{item.AccountNumber}}
+              <br/>
+              Rating: {{item.Rating}}
+              <br/>
+              Sell Opportunity: {{item.UpsellOpportunity__c}}
+
+        </div>
+        <!-- Page buttons for Companies -->
+        <div class="pull-right btn-group">
+          <a ng-repeat="page in data.records|orderBy: 'Name' |filter:filteringText|pageCount:pageSize"
+              ng-click="selectPage($index+1)" class="btn btn-default"
+              ng-class="getPageClass($index+1)">
+              {{$index+1}}
+        </a>
+        </div>
+      </div>
+        <div class="col-xs-4">
+          <div ng-repeat="item in data.records |filter:companyFilterFn"  >
+            <div class="panel well" ng-repeat="contact in item.Contacts.records|orderBy: 'Department'|range:selectedClientPage:clientPageSize">
+              <strong>Name</strong>: &nbsp;{{contact.Name}}
+              <br/>
+              <strong>Title</strong>: &nbsp;{{contact.Title}}
+              <br/>
+              <strong>Phone</strong>: &nbsp;{{contact.Phone}}
+              <br/>
+              <strong>Department</strong>: &nbsp;{{contact.Department}}
+              <br/>
+              <strong>Email</strong>: &nbsp;{{contact.Email}}
+            </div>
+            <!-- Page buttons for contacts -->
+            <div class="pull-right btn-group">
+              <a ng-repeat="page in item.Contacts.records |pageCount:clientPageSize"
+                  ng-click="selectClientPage($index+1)" class="btn btn-default"
+                  ng-class="getClientPageClass($index+1)">
+                  {{$index+1}}
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
